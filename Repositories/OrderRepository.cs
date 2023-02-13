@@ -13,7 +13,7 @@ public class OrderRepository : IOrderRepository
     public Task Create(string name, string phone, int pickupId, int destinationId, string comment = "") =>
         _db.SaveData("dbo.spOrder_Create", new { Name = name, Phone = phone, PickupId = pickupId, DestinationId = destinationId, Comment = comment });
 
-    public Task Assign(int orderId, int driverId) =>
+    public Task Assign(int orderId, int? driverId) =>
         _db.SaveData("dbo.spOrder_Assign", new { Id = orderId, DriverId = driverId });
 
     public Task Cancel(int orderId) =>
