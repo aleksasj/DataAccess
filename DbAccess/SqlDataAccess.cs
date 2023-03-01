@@ -27,16 +27,18 @@ public class SqlDataAccess : ISqlDataAccess
             commandType: CommandType.StoredProcedure);
     }
 
-    public async Task SaveData<T>(
+    public async Task<IEnumerable<T>> SaveData<T>(
         string storedProcedure,
         T parameters,
-        string connectionId = "Default")
+        string connectionId = "DefaultWrite")
     {
         using IDbConnection connection = new SqlConnection(_config.GetConnectionString(connectionId));
 
-        await connection.ExecuteAsync(
+        return await connection.QueryAsync<T>(
             storedProcedure,
             parameters,
             commandType: CommandType.StoredProcedure);
-    }
+       }
+
+
 }

@@ -3,6 +3,18 @@ using DataAccess.Models;
 
 namespace DataAccess.Data;
 
+public interface IOrderRepository
+{
+    Task Assign(int orderId, int? driverId);
+    Task Cancel(int orderId);
+    Task Create(string name, string phone, int pickupId, int destinationId, string comment = "");
+    Task<OrderListModel?> Detail(int orderId);
+    Task Finish(int orderId);
+    Task Picked(int orderId);
+    Task<IEnumerable<OrdersModel>> GetOrders(int? driverId = null, int page = 1, int[] status = null, int perPage = 10);
+
+}
+
 public class OrderRepository : IOrderRepository
 {
     private readonly ISqlDataAccess _db;
@@ -25,9 +37,9 @@ public class OrderRepository : IOrderRepository
     public Task Finish(int orderId) =>
        _db.SaveData("dbo.spOrder_Finish", new { Id = orderId });
 
-    public async Task<OrdersModel?> Detail(int orderId)
+    public async Task<OrderListModel?> Detail(int orderId)
     {
-        var result = await _db.LoadData<OrdersModel, dynamic>("dbo.spOrder_Detail", new { Id = orderId });
+        var result = await _db.LoadData<OrderListModel, dynamic>("dbo.spOrder_Detail", new { Id = orderId });
 
         return result.FirstOrDefault();
     }

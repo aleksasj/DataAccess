@@ -4,6 +4,15 @@ using System.Data;
 
 namespace DataAccess.Data;
 
+public interface IUserRepository
+{
+    Task<UsersModel?> GetUserByCredentials(string username, string password);
+    Task<UsersModel?> Get(int id);
+    Task Create(string username, string password, string role = UsersModel.ROLE_DRIVER);
+    Task ChangePassword(int userId, string password);
+    Task<IEnumerable<UsersModel>> GetAll();
+
+}
 public class UserRepository : IUserRepository
 {
     private readonly ISqlDataAccess _db;
@@ -19,9 +28,7 @@ public class UserRepository : IUserRepository
         return result.FirstOrDefault();
     }
     public async Task Create(string username, string password, string role = UsersModel.ROLE_DRIVER)
-    {
-        await _db.SaveData("dbo.spUser_Create", new { Username = username, Password = password, Role = role });
-    }
+        => await _db.SaveData("dbo.spUser_Create", new { Username = username, Password = password, Role = role });
 
     public async Task<UsersModel?> Get(int id)
     {
@@ -30,11 +37,10 @@ public class UserRepository : IUserRepository
         return result.FirstOrDefault();
     }
 
-    public Task ChangePassword(int userId, string password) => _db.SaveData("dbo.spUser_ChangePassword", new
-    {
-        Id = userId,
-        Password = password,
-    }
+    public Task ChangePassword(int userId, string password) => _db.SaveData("dbo.spUser_ChangePassword", new {
+            Id = userId,
+            Password = password,
+        }
     );
 
     public async Task<IEnumerable<UsersModel>> GetAll() => await _db.LoadData<UsersModel, dynamic>("dbo.spUser_All", new {} );
