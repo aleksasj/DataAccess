@@ -12,7 +12,7 @@ public class LocationRepository : ILocationRepository
     {
         _db = db;
     }
-    public Task Create(int driverId, float latitude, float longitude, int? orderId = null) => _db.SaveData("dbo.spLocation_Create", new {
+    public Task Create(int driverId, float latitude, float longitude, int? orderId = null) => _db.Execute("dbo.spLocation_Create", new {
             DriverId = driverId,
             Latitude = Helper.GeoLocation.FormatToStandart(latitude),
             Longitude = Helper.GeoLocation.FormatToStandart(longitude),

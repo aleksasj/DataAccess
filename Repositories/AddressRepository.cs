@@ -4,6 +4,7 @@ using DataAccess.Models;
 namespace DataAccess.Data;
 public interface IAddressRepository
 {
+    Task<AddressModel?> GetOrCreate(string title, float latitude, float longitude);
     Task<AddressModel?> Create(string title, float latitude, float longitude);
     Task<AddressModel?> Get(float latitude, float longitude);
 }
@@ -14,9 +15,20 @@ public class AddressRepository : IAddressRepository
     {
         _db = db;
     }
+    public async Task<AddressModel?> GetOrCreate(string title, float latitude, float longitude)
+    {
+        var address = await Get(latitude, longitude);
+        if (address == null)
+        {
+            address = await Create(title, latitude, longitude); 
+        }
+
+        return address;
+    }
+
     public async Task<AddressModel?> Create(string title, float latitude, float longitude)
     {
-        var result = await _db.LoadData<AddressModel, dynamic>("dbo.spAddress_Create", new
+        var result = await _db.Execute<AddressModel, dynamic>("dbo.spAddress_Create", new
         {
             Title = title,
             Latitude = Helper.GeoLocation.FormatToStandart(latitude),
@@ -27,7 +39,7 @@ public class AddressRepository : IAddressRepository
     }
     public async Task<AddressModel?> Get(float latitude, float longitude)
     {
-        var result = await _db.LoadData<AddressModel, dynamic>("dbo.spAddress_Get", new
+        var result = await _db.Execute<AddressModel, dynamic>("dbo.spAddress_Get", new
         {
             Latitude = Helper.GeoLocation.FormatToStandart(latitude),
             Longitude = Helper.GeoLocation.FormatToStandart(longitude)

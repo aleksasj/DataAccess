@@ -22,26 +22,26 @@ public class UserRepository : IUserRepository
     }
     public async Task<UsersModel?> GetUserByCredentials(string username, string password)
     {
-        var result = await _db.LoadData<UsersModel, dynamic>("dbo.spUser_Auth",
+        var result = await _db.Execute<UsersModel, dynamic>("dbo.spUser_Auth",
             new { Username = username, Password = password });
 
         return result.FirstOrDefault();
     }
     public async Task Create(string username, string password, string role = UsersModel.ROLE_DRIVER)
-        => await _db.SaveData("dbo.spUser_Create", new { Username = username, Password = password, Role = role });
+        => await _db.Execute("dbo.spUser_Create", new { Username = username, Password = password, Role = role });
 
     public async Task<UsersModel?> Get(int id)
     {
-        var result = await _db.LoadData<UsersModel, dynamic>("dbo.spUser_Get", new { Id = id});
+        var result = await _db.Execute<UsersModel, dynamic>("dbo.spUser_Get", new { Id = id});
 
         return result.FirstOrDefault();
     }
 
-    public Task ChangePassword(int userId, string password) => _db.SaveData("dbo.spUser_ChangePassword", new {
+    public Task ChangePassword(int userId, string password) => _db.Execute("dbo.spUser_ChangePassword", new {
             Id = userId,
             Password = password,
         }
     );
 
-    public async Task<IEnumerable<UsersModel>> GetAll() => await _db.LoadData<UsersModel, dynamic>("dbo.spUser_All", new {} );
+    public async Task<IEnumerable<UsersModel>> GetAll() => await _db.Execute<UsersModel, dynamic>("dbo.spUser_All", new {} );
 }

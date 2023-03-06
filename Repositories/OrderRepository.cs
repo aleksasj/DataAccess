@@ -7,7 +7,7 @@ public interface IOrderRepository
 {
     Task Assign(int orderId, int? driverId);
     Task Cancel(int orderId);
-    Task Create(string name, string phone, int pickupId, int destinationId, string comment = "");
+    Task<OrderListModel?> Create(string name, string phone, int pickupId, int destinationId, string comment = "");
     Task<OrderListModel?> Detail(int orderId);
     Task Finish(int orderId);
     Task Picked(int orderId);
@@ -22,24 +22,33 @@ public class OrderRepository : IOrderRepository
     {
         _db = db;
     }
-    public Task Create(string name, string phone, int pickupId, int destinationId, string comment = "") =>
-        _db.SaveData("dbo.spOrder_Create", new { Name = name, Phone = phone, PickupId = pickupId, DestinationId = destinationId, Comment = comment });
+    public async Task<OrderListModel?> Create(string name, string phone, int pickupId, int destinationId, string comment = "") {
+        var order = await _db.Execute<OrdersModel, dynamic>("dbo.spOrder_Create", new { Name = name, Phone = phone, PickupId = pickupId, DestinationId = destinationId, Comment = comment });
+        var orderData = order.FirstOrDefault();
+
+        if (orderData != null)
+        {
+            return await Detail(orderData.Id);
+        }
+
+        return null;
+    }
 
     public Task Assign(int orderId, int? driverId) =>
-        _db.SaveData("dbo.spOrder_Assign", new { Id = orderId, DriverId = driverId });
+        _db.Execute("dbo.spOrder_Assign", new { Id = orderId, DriverId = driverId });
 
     public Task Cancel(int orderId) =>
-       _db.SaveData("dbo.spOrder_Cancel", new { Id = orderId });
+       _db.Execute("dbo.spOrder_Cancel", new { Id = orderId });
 
     public Task Picked(int orderId) =>
-       _db.SaveData("dbo.spOrder_Picked", new { Id = orderId });
+       _db.Execute("dbo.spOrder_Picked", new { Id = orderId });
 
     public Task Finish(int orderId) =>
-       _db.SaveData("dbo.spOrder_Finish", new { Id = orderId });
+       _db.Execute("dbo.spOrder_Finish", new { Id = orderId });
 
     public async Task<OrderListModel?> Detail(int orderId)
     {
-        var result = await _db.LoadData<OrderListModel, dynamic>("dbo.spOrder_Detail", new { Id = orderId });
+        var result = await _db.Execute<OrderListModel, dynamic>("dbo.spOrder_Detail", new { Id = orderId });
 
         return result.FirstOrDefault();
     }
@@ -62,9 +71,9 @@ public class OrderRepository : IOrderRepository
 
         if (driverId != null)
         {
-            return await _db.LoadData<OrdersModel, dynamic>("dbp.spOrder_ListByUser", new { DriverId = driverId, Offset = page, Status = string.Join(",", status), Limit = perPage });
+            return await _db.Execute<OrdersModel, dynamic>("dbp.spOrder_ListByUser", new { DriverId = driverId, Offset = page, Status = string.Join(",", status), Limit = perPage });
         }
 
-        return await _db.LoadData<OrdersModel, dynamic>("dbp.spOrder_List", new { Offset = page, Status = string.Join(",", status), Limit = perPage });
+        return await _db.Execute<OrdersModel, dynamic>("dbp.spOrder_List", new { Offset = page, Status = string.Join(",", status), Limit = perPage });
     }
 }

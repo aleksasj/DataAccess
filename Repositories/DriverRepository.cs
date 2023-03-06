@@ -17,20 +17,20 @@ public class DriverRepository : IDriverRepository
     {
         _db = db;
     }
-    public Task AddLocation(int driverId, float latitude, float longitude) => _db.SaveData("dbo.spLocation_Create", new
+    public Task AddLocation(int driverId, float latitude, float longitude) => _db.Execute("dbo.spLocation_Create", new
     {
         Id = driverId,
         Latitude = Helper.GeoLocation.FormatToStandart(latitude),
         Longitude = Helper.GeoLocation.FormatToStandart(longitude)
     }
     );
-    public Task StartWorking(int userId) => _db.SaveData("dbo.spLocation_StartWorking", new { Id = userId });
+    public Task StartWorking(int userId) => _db.Execute("dbo.spLocation_StartWorking", new { Id = userId });
 
-    public Task StopWorking(int userId) => _db.SaveData("dbo.spLocation_StopWorking", new { Id = userId });
+    public Task StopWorking(int userId) => _db.Execute("dbo.spLocation_StopWorking", new { Id = userId });
 
     public async Task<IEnumerable<UsersModel>> getAvailable(float latitude, float longitude, int maxActiveOrders = 0, int maxDistanceFrom = 10)
     {
-        return await _db.LoadData<UsersModel, dynamic>("dbo.spDriver_GetAvailable",
+        return await _db.Execute<UsersModel, dynamic>("dbo.spDriver_GetAvailable",
            new { 
                Latitude = Helper.GeoLocation.FormatToStandart(latitude), 
                Logintude = Helper.GeoLocation.FormatToStandart(longitude), 

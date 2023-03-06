@@ -2,6 +2,6 @@
 
 public interface ISqlDataAccess
 {
-    Task<IEnumerable<T>> LoadData<T, U>(string storedProcedure, U parameters, string connectionId = "Default");
-    Task<IEnumerable<T>> SaveData<T>(string storedProcedure, T parameters, string connectionId = "Default");
+    Task<IEnumerable<T>> Execute<T, U>(string storedProcedure, U parameters, string connectionId = "Default");
+    Task<IEnumerable<T>> Execute<T>(string storedProcedure, T parameters, string connectionId = "Default");
 }
