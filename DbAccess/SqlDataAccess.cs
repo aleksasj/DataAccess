@@ -31,5 +31,9 @@ public class SqlDataAccess : ISqlDataAccess
     {
         return await Execute<T, dynamic>(storedProcedure, parameters, connectionId);
     }
+    public async Task<IEnumerable<T>> Execute<T>(string storedProcedure, string connectionId = "Default")
+    {
+        return await Execute<T, dynamic>(storedProcedure, new { }, connectionId);
+    }
 }
 

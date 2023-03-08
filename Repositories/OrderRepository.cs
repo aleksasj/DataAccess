@@ -12,7 +12,8 @@ public interface IOrderRepository
     Task Finish(int orderId);
     Task Picked(int orderId);
     Task<IEnumerable<OrdersModel>> GetOrders(int? driverId = null, int page = 1, int[] status = null, int perPage = 10);
-
+    Task CancelPendingTooLong(int minutes);
+    Task<IEnumerable<OrderListModel>> getPendingList();
 }
 
 public class OrderRepository : IOrderRepository
@@ -60,7 +61,7 @@ public class OrderRepository : IOrderRepository
         page--;
 
         if (status == null) {
-            status = new int[] { 
+            status = new int[] {
                 OrdersModel.STATUS_CANCELED,
                 OrdersModel.STATUS_NEW,
                 OrdersModel.STATUS_ASSIGNED,
@@ -76,4 +77,9 @@ public class OrderRepository : IOrderRepository
 
         return await _db.Execute<OrdersModel, dynamic>("dbp.spOrder_List", new { Offset = page, Status = string.Join(",", status), Limit = perPage });
     }
+
+    public async Task CancelPendingTooLong(int min) => await _db.Execute("dbo.spOrder_CancelPendingTooLong", new { CancelTime = DateTime.Now.AddMinutes(min * -1) });
+
+    public async Task<IEnumerable<OrderListModel>> getPendingList()
+        => await _db.Execute<OrderListModel>("dbp.spOrder_PendingList");
 }

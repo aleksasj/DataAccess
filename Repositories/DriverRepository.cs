@@ -32,8 +32,8 @@ public class DriverRepository : IDriverRepository
     {
         return await _db.Execute<UsersModel, dynamic>("dbo.spDriver_GetAvailable",
            new { 
-               Latitude = Helper.GeoLocation.FormatToStandart(latitude), 
-               Logintude = Helper.GeoLocation.FormatToStandart(longitude), 
+               OrderLatitude = Helper.GeoLocation.FormatToStandart(latitude), 
+               OrderLogintude = Helper.GeoLocation.FormatToStandart(longitude), 
                MaxAllowedOrdersCount = maxActiveOrders, 
                MaxAllowedOrdersDistance = maxDistanceFrom 
            });
