@@ -1,6 +1,5 @@
 ﻿using DataAccess.DbAccess;
 using DataAccess.Models;
-using System.Data;
 
 namespace DataAccess.Data;
 
@@ -32,16 +31,17 @@ public class UserRepository : IUserRepository
 
     public async Task<UsersModel?> Get(int id)
     {
-        var result = await _db.Execute<UsersModel, dynamic>("dbo.spUser_Get", new { Id = id});
+        var result = await _db.Execute<UsersModel, dynamic>("dbo.spUser_Get", new { Id = id });
 
         return result.FirstOrDefault();
     }
 
-    public Task ChangePassword(int userId, string password) => _db.Execute("dbo.spUser_ChangePassword", new {
-            Id = userId,
-            Password = password,
-        }
+    public Task ChangePassword(int userId, string password) => _db.Execute("dbo.spUser_ChangePassword", new
+    {
+        Id = userId,
+        Password = password,
+    }
     );
 
-    public async Task<IEnumerable<UsersModel>> GetAll() => await _db.Execute<UsersModel, dynamic>("dbo.spUser_All", new {} );
+    public async Task<IEnumerable<UsersModel>> GetAll() => await _db.Execute<UsersModel, dynamic>("dbo.spUser_All", new { });
 }

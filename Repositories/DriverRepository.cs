@@ -31,11 +31,12 @@ public class DriverRepository : IDriverRepository
     public async Task<IEnumerable<UsersModel>> getAvailable(float latitude, float longitude, int maxActiveOrders = 0, int maxDistanceFrom = 10)
     {
         return await _db.Execute<UsersModel, dynamic>("dbo.spDriver_GetAvailable",
-           new { 
-               OrderLatitude = Helper.GeoLocation.FormatToStandart(latitude), 
-               OrderLogintude = Helper.GeoLocation.FormatToStandart(longitude), 
-               MaxAllowedOrdersCount = maxActiveOrders, 
-               MaxAllowedOrdersDistance = maxDistanceFrom 
+           new
+           {
+               OrderLatitude = Helper.GeoLocation.FormatToStandart(latitude),
+               OrderLogintude = Helper.GeoLocation.FormatToStandart(longitude),
+               MaxAllowedOrdersCount = maxActiveOrders,
+               MaxAllowedOrdersDistance = maxDistanceFrom
            });
     }
 }

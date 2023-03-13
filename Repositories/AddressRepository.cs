@@ -20,7 +20,7 @@ public class AddressRepository : IAddressRepository
         var address = await Get(latitude, longitude);
         if (address == null)
         {
-            address = await Create(title, latitude, longitude); 
+            address = await Create(title, latitude, longitude);
         }
 
         return address;

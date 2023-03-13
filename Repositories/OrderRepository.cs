@@ -11,7 +11,7 @@ public interface IOrderRepository
     Task<OrderListModel?> Detail(int orderId);
     Task Finish(int orderId);
     Task Picked(int orderId);
-    Task<IEnumerable<OrdersModel>> GetOrders(int? driverId = null, int page = 1, int[] status = null, int perPage = 10);
+    Task<IEnumerable<OrderListModel>> GetOrders(int? driverId = null, int page = 1, int[] status = null, int perPage = 10);
     Task CancelPendingTooLong(int minutes);
     Task<IEnumerable<OrderListModel>> getPendingList();
 }
@@ -23,7 +23,8 @@ public class OrderRepository : IOrderRepository
     {
         _db = db;
     }
-    public async Task<OrderListModel?> Create(string name, string phone, int pickupId, int destinationId, string comment = "") {
+    public async Task<OrderListModel?> Create(string name, string phone, int pickupId, int destinationId, string comment = "")
+    {
         var order = await _db.Execute<OrdersModel, dynamic>("dbo.spOrder_Create", new { Name = name, Phone = phone, PickupId = pickupId, DestinationId = destinationId, Comment = comment });
         var orderData = order.FirstOrDefault();
 
@@ -54,13 +55,14 @@ public class OrderRepository : IOrderRepository
         return result.FirstOrDefault();
     }
 
-    public async Task<IEnumerable<OrdersModel>> GetOrders(int? driverId = null, int page = 1, int[]? status = null, int perPage = 10)
+    public async Task<IEnumerable<OrderListModel>> GetOrders(int? driverId = null, int page = 1, int[]? status = null, int perPage = 10)
     {
         page = page < 0 ? 1 : page;
         perPage = perPage < 1 ? 1 : 10;
         page--;
 
-        if (status == null) {
+        if (status == null)
+        {
             status = new int[] {
                 OrdersModel.STATUS_CANCELED,
                 OrdersModel.STATUS_NEW,
@@ -70,16 +72,18 @@ public class OrderRepository : IOrderRepository
             };
         }
 
+        var statuses = string.Join(",", status);
+
         if (driverId != null)
         {
-            return await _db.Execute<OrdersModel, dynamic>("dbp.spOrder_ListByUser", new { DriverId = driverId, Offset = page, Status = string.Join(",", status), Limit = perPage });
+            return await _db.Execute<OrderListModel, dynamic>("dbo.spOrder_ListByUser", new { DriverId = driverId, Offset = page, StatusIds = statuses, Limit = perPage });
         }
 
-        return await _db.Execute<OrdersModel, dynamic>("dbp.spOrder_List", new { Offset = page, Status = string.Join(",", status), Limit = perPage });
+        return await _db.Execute<OrderListModel, dynamic>("dbo.spOrder_List", new { Offset = page, StatusIds = statuses, Limit = perPage });
     }
 
     public async Task CancelPendingTooLong(int min) => await _db.Execute("dbo.spOrder_CancelPendingTooLong", new { CancelTime = DateTime.Now.AddMinutes(min * -1) });
 
     public async Task<IEnumerable<OrderListModel>> getPendingList()
-        => await _db.Execute<OrderListModel>("dbp.spOrder_PendingList");
+        => await _db.Execute<OrderListModel>("dbo.spOrder_PendingList");
 }

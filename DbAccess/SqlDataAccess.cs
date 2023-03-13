@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
-using System.Data.SqlClient;
-using Dapper;
+﻿using Dapper;
+using Microsoft.Extensions.Configuration;
 using System.Data;
+using System.Data.SqlClient;
 
 namespace DataAccess.DbAccess;
 
