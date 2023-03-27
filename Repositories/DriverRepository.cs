@@ -13,10 +13,7 @@ public interface IDriverRepository
 public class DriverRepository : IDriverRepository
 {
     private readonly ISqlDataAccess _db;
-    public DriverRepository(ISqlDataAccess db)
-    {
-        _db = db;
-    }
+    public DriverRepository(ISqlDataAccess db) => _db = db;
     public Task AddLocation(int driverId, float latitude, float longitude) => _db.Execute("dbo.spLocation_Create", new
     {
         Id = driverId,

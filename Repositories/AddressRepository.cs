@@ -11,10 +11,8 @@ public interface IAddressRepository
 public class AddressRepository : IAddressRepository
 {
     private readonly ISqlDataAccess _db;
-    public AddressRepository(ISqlDataAccess db)
-    {
-        _db = db;
-    }
+    public AddressRepository(ISqlDataAccess db) => _db = db;
+
     public async Task<AddressModel?> GetOrCreate(string title, float latitude, float longitude)
     {
         var address = await Get(latitude, longitude);

@@ -8,10 +8,7 @@ public interface ILocationRepository
 public class LocationRepository : ILocationRepository
 {
     private readonly ISqlDataAccess _db;
-    public LocationRepository(ISqlDataAccess db)
-    {
-        _db = db;
-    }
+    public LocationRepository(ISqlDataAccess db) => _db = db;
     public Task Create(int driverId, float latitude, float longitude, int? orderId = null) => _db.Execute("dbo.spLocation_Create", new
     {
         DriverId = driverId,

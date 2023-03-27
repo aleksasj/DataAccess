@@ -19,10 +19,8 @@ public interface IOrderRepository
 public class OrderRepository : IOrderRepository
 {
     private readonly ISqlDataAccess _db;
-    public OrderRepository(ISqlDataAccess db)
-    {
-        _db = db;
-    }
+    public OrderRepository(ISqlDataAccess db) => _db = db;
+
     public async Task<OrderListModel?> Create(string name, string phone, int pickupId, int destinationId, string comment = "")
     {
         var order = await _db.Execute<OrdersModel, dynamic>("dbo.spOrder_Create", new { Name = name, Phone = phone, PickupId = pickupId, DestinationId = destinationId, Comment = comment });

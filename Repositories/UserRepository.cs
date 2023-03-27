@@ -15,10 +15,7 @@ public interface IUserRepository
 public class UserRepository : IUserRepository
 {
     private readonly ISqlDataAccess _db;
-    public UserRepository(ISqlDataAccess db)
-    {
-        _db = db;
-    }
+    public UserRepository(ISqlDataAccess db) => _db = db;
     public async Task<UsersModel?> GetUserByCredentials(string username, string password)
     {
         var result = await _db.Execute<UsersModel, dynamic>("dbo.spUser_Auth",
